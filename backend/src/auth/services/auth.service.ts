@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from '../../users/services/users.service';
 import { TokenService, TokenPair } from './token.service';
+import { EmailService } from '../../email/services/email.service';
 import {
   RegisterDto,
   LoginDto,
@@ -34,10 +35,13 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly tokenService: TokenService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {
-    this.saltRounds = this.configService.get<number>('BCRYPT_SALT_ROUNDS') || 10;
-    this.passwordResetExpiresInMinutes =
-      this.configService.get<number>('PASSWORD_RESET_EXPIRES_MINUTES') || 60;
+    const saltRoundsEnv = this.configService.get<string>('BCRYPT_SALT_ROUNDS');
+    this.saltRounds = saltRoundsEnv ? parseInt(saltRoundsEnv, 10) : 10;
+    
+    const resetExpiresEnv = this.configService.get<string>('PASSWORD_RESET_EXPIRES_MINUTES');
+    this.passwordResetExpiresInMinutes = resetExpiresEnv ? parseInt(resetExpiresEnv, 10) : 60;
   }
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
@@ -61,8 +65,12 @@ export class AuthService {
       emailVerificationToken,
     });
 
-    // TODO: Enviar email de verificación
-    // await this.emailService.sendVerificationEmail(user.email, emailVerificationToken);
+    // Enviar email de verificación
+    await this.emailService.sendVerificationEmail(
+      user.email,
+      user.firstName,
+      emailVerificationToken,
+    );
 
     const tokens = await this.tokenService.generateTokenPair(user);
 
@@ -131,8 +139,12 @@ export class AuthService {
 
     await this.usersService.setPasswordResetToken(user.id, resetToken, expiresAt);
 
-    // TODO: Enviar email con token de recuperación
-    // await this.emailService.sendPasswordResetEmail(user.email, resetToken);
+    // Enviar email con token de recuperación
+    await this.emailService.sendPasswordResetEmail(
+      user.email,
+      user.firstName,
+      resetToken,
+    );
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
@@ -157,6 +169,9 @@ export class AuthService {
 
     // Revocar todos los tokens de refresco del usuario
     await this.tokenService.revokeAllUserTokens(user.id);
+
+    // Notificar al usuario que su contraseña fue cambiada
+    await this.emailService.sendPasswordChangedEmail(user.email, user.firstName);
   }
 
   async changePassword(
@@ -220,8 +235,12 @@ export class AuthService {
       emailVerificationToken: newToken,
     });
 
-    // TODO: Enviar email de verificación
-    // await this.emailService.sendVerificationEmail(user.email, newToken);
+    // Enviar email de verificación
+    await this.emailService.sendVerificationEmail(
+      user.email,
+      user.firstName,
+      newToken,
+    );
   }
 
   private sanitizeUser(user: User): Partial<User> {

@@ -23,8 +23,8 @@ export class TokenService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
-    this.refreshTokenExpiresIn =
-      this.configService.get<number>('JWT_REFRESH_EXPIRES_IN_DAYS') || 7;
+    const refreshExpiresEnv = this.configService.get<string>('JWT_REFRESH_EXPIRES_IN_DAYS');
+    this.refreshTokenExpiresIn = refreshExpiresEnv ? parseInt(refreshExpiresEnv, 10) : 7;
   }
 
   async generateTokenPair(user: User): Promise<TokenPair> {
