@@ -15,7 +15,6 @@ export interface TokenPair {
 
 @Injectable()
 export class TokenService {
-  private readonly accessTokenExpiresIn: string;
   private readonly refreshTokenExpiresIn: number;
 
   constructor(
@@ -24,8 +23,6 @@ export class TokenService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
-    this.accessTokenExpiresIn =
-      this.configService.get<string>('JWT_ACCESS_EXPIRES_IN') || '15m';
     this.refreshTokenExpiresIn =
       this.configService.get<number>('JWT_REFRESH_EXPIRES_IN_DAYS') || 7;
   }
