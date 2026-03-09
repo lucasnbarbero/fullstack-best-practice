@@ -11,6 +11,15 @@ async function bootstrap() {
   const logger = app.get(Logger);
   app.useLogger(logger);
 
+  // Configuración de CORS
+  const frontendUrl = configService.get<string>('FRONTEND_URL');
+  app.enableCors({
+    origin: frontendUrl,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   // Validación global de DTOs
   app.useGlobalPipes(
     new ValidationPipe({
