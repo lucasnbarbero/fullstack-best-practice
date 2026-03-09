@@ -6,8 +6,11 @@ Proyecto fullstack en evolución para practicar buenas prácticas de desarrollo.
 
 ### Backend
 - **NestJS** - Framework Node.js para aplicaciones escalables
+- **TypeORM** - ORM para PostgreSQL
+- **Passport + JWT** - Autenticación stateless
 - **Swagger** - Documentación interactiva de API
 - **Pino** - Logging estructurado de alto rendimiento
+- **class-validator** - Validación de DTOs
 
 ### Frontend
 - **Vue 3** - Framework progresivo de JavaScript
@@ -19,9 +22,21 @@ Proyecto fullstack en evolución para practicar buenas prácticas de desarrollo.
 ## Estructura del Proyecto
 
 ```
-├── backend/          # API NestJS
+├── backend/
 │   └── src/
-├── frontend/         # Aplicación Vue
+│       ├── auth/           # Módulo de autenticación
+│       │   ├── controllers/
+│       │   ├── decorators/
+│       │   ├── dto/
+│       │   ├── entities/
+│       │   ├── guards/
+│       │   ├── services/
+│       │   └── strategies/
+│       ├── users/          # Módulo de usuarios
+│       │   ├── entities/
+│       │   └── services/
+│       └── main.ts
+├── frontend/
 │   └── src/
 └── README.md
 ```
@@ -33,6 +48,20 @@ Proyecto fullstack en evolución para practicar buenas prácticas de desarrollo.
 ```bash
 cd backend
 npm install
+```
+
+Crea la base de datos PostgreSQL:
+```sql
+CREATE DATABASE fullstack_best_practice;
+```
+
+Configura el archivo `.env` basándote en `.env.example`:
+```bash
+cp .env.example .env
+```
+
+Inicia el servidor:
+```bash
 npm run start:dev
 ```
 
@@ -50,12 +79,33 @@ npm run dev
 
 La aplicación estará disponible en `http://localhost:5173`
 
+## Endpoints de Autenticación
+
+| Método | Endpoint | Descripción | Auth |
+|--------|----------|-------------|------|
+| POST | `/auth/register` | Registro de usuario | No |
+| POST | `/auth/login` | Iniciar sesión | No |
+| POST | `/auth/logout` | Cerrar sesión | Sí |
+| POST | `/auth/logout-all` | Cerrar todas las sesiones | Sí |
+| POST | `/auth/refresh` | Renovar access token | No |
+| GET | `/auth/me` | Obtener perfil | Sí |
+| POST | `/auth/forgot-password` | Solicitar recuperación | No |
+| POST | `/auth/reset-password` | Restablecer contraseña | No |
+| POST | `/auth/change-password` | Cambiar contraseña | Sí |
+| POST | `/auth/verify-email` | Verificar email | No |
+| POST | `/auth/resend-verification` | Reenviar verificación | No |
+
 ## Funcionalidades Implementadas
 
 - [x] Configuración inicial NestJS + Vue
 - [x] Documentación de API con Swagger
 - [x] Sistema de logging estructurado
-- [ ] Autenticación JWT
+- [x] Base de datos PostgreSQL con TypeORM
+- [x] Autenticación JWT (access + refresh tokens)
+- [x] Registro y login de usuarios
+- [x] Recuperación de contraseña
+- [x] Verificación de email
+- [x] Validación de DTOs
 - [ ] Paginación
 - [ ] *Más funcionalidades próximamente...*
 
