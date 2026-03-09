@@ -23,6 +23,10 @@ Proyecto fullstack en evolución para practicar buenas prácticas de desarrollo.
 
 ```
 ├── backend/
+│   ├── docs/               # Documentación del proyecto
+│   │   ├── auth-endpoints.md
+│   │   ├── authorization-endpoints.md
+│   │   └── user-manual.md
 │   └── src/
 │       ├── auth/           # Módulo de autenticación
 │       │   ├── controllers/
@@ -32,6 +36,15 @@ Proyecto fullstack en evolución para practicar buenas prácticas de desarrollo.
 │       │   ├── guards/
 │       │   ├── services/
 │       │   └── strategies/
+│       ├── authorization/  # Módulo de autorización (RBAC)
+│       │   ├── controllers/
+│       │   ├── decorators/
+│       │   ├── dto/
+│       │   ├── entities/
+│       │   ├── guards/
+│       │   └── services/
+│       ├── email/          # Módulo de email
+│       │   └── services/
 │       ├── users/          # Módulo de usuarios
 │       │   ├── entities/
 │       │   └── services/
@@ -95,6 +108,32 @@ La aplicación estará disponible en `http://localhost:5173`
 | POST | `/auth/verify-email` | Verificar email | No |
 | POST | `/auth/resend-verification` | Reenviar verificación | No |
 
+## Endpoints de Autorización
+
+Todos los endpoints requieren autenticación y rol `ADMIN`.
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/authorization/roles` | Listar roles |
+| GET | `/authorization/roles/:id` | Obtener rol por ID |
+| POST | `/authorization/roles` | Crear rol |
+| POST | `/authorization/roles/:id/permissions` | Asignar permisos a rol |
+| DELETE | `/authorization/roles/:roleId/permissions/:permissionName` | Remover permiso de rol |
+| DELETE | `/authorization/roles/:id` | Eliminar rol |
+| GET | `/authorization/permissions` | Listar permisos |
+| GET | `/authorization/permissions/module/:module` | Permisos por módulo |
+| GET | `/authorization/permissions/:id` | Obtener permiso por ID |
+| POST | `/authorization/permissions` | Crear permiso |
+| DELETE | `/authorization/permissions/:id` | Eliminar permiso |
+
+### Roles del Sistema
+
+| Rol | Descripción |
+|-----|-------------|
+| 👑 ADMIN | Acceso total al sistema |
+| 🛡️ MODERATOR | Permisos de lectura y actualización |
+| 👤 USER | Permisos básicos de lectura |
+
 ## Funcionalidades Implementadas
 
 - [x] Configuración inicial NestJS + Vue
@@ -106,6 +145,11 @@ La aplicación estará disponible en `http://localhost:5173`
 - [x] Recuperación de contraseña
 - [x] Verificación de email
 - [x] Validación de DTOs
+- [x] Sistema de autorización RBAC (roles y permisos)
+- [x] Roles predefinidos (ADMIN, MODERATOR, USER)
+- [x] Guards para proteger endpoints por rol/permiso
+- [x] Servicio de email con Nodemailer
+- [x] Documentación completa del sistema
 - [ ] Paginación
 - [ ] *Más funcionalidades próximamente...*
 
