@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { AuthorizationModule } from './authorization/authorization.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { AuthorizationModule } from './authorization/authorization.module';
     AuthModule,
     EmailModule,
     AuthorizationModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
