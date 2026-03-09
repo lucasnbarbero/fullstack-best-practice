@@ -116,6 +116,15 @@ src/
 | `npm run test:e2e` | Tests e2e |
 | `npm run lint` | Ejecutar linter |
 
+### Migraciones
+
+| Comando | Descripción |
+|---------|-------------|
+| `npm run migration:generate --name=NombreMigracion` | Generar migración basada en cambios de entidades |
+| `npm run migration:run` | Ejecutar migraciones pendientes |
+| `npm run migration:revert` | Revertir última migración |
+| `npm run migration:show` | Mostrar estado de migraciones |
+
 ## 📦 Dependencias Principales
 
 - **@nestjs/passport** + **@nestjs/jwt** - Autenticación
