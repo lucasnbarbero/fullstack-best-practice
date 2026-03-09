@@ -77,4 +77,8 @@ export class UsersService {
       passwordResetExpires: null,
     });
   }
+
+  async save(user: User): Promise<User> {
+    return this.usersRepository.save(user);
+  }
 }

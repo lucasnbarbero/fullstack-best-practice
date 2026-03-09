@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from '../../users/services/users.service';
 import { TokenService, TokenPair } from './token.service';
 import { EmailService } from '../../email/services/email.service';
+import { RolesService } from '../../authorization/services/roles.service';
 import {
   RegisterDto,
   LoginDto,
@@ -36,6 +37,7 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
+    private readonly rolesService: RolesService,
   ) {
     const saltRoundsEnv = this.configService.get<string>('BCRYPT_SALT_ROUNDS');
     this.saltRounds = saltRoundsEnv ? parseInt(saltRoundsEnv, 10) : 10;
@@ -64,6 +66,11 @@ export class AuthService {
       lastName: registerDto.lastName,
       emailVerificationToken,
     });
+
+    // Asignar rol por defecto
+    const defaultRole = await this.rolesService.getDefaultRole();
+    user.roles = [defaultRole];
+    await this.usersService.save(user);
 
     // Enviar email de verificación
     await this.emailService.sendVerificationEmail(

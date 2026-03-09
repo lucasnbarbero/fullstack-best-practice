@@ -5,9 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { RefreshToken } from '../../auth/entities/refresh-token.entity';
+import { Role } from '../../authorization/entities/role.entity';
 
 @Entity('users')
 export class User {
@@ -48,6 +51,14 @@ export class User {
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshTokens: RefreshToken[];
 
+  @ManyToMany(() => Role, { eager: true })
+  @JoinTable({
+    name: 'user_roles',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
+  })
+  roles: Role[];
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
@@ -56,5 +67,21 @@ export class User {
 
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
+  }
+
+  hasRole(roleName: string): boolean {
+    return this.roles?.some((r) => r.name === roleName) ?? false;
+  }
+
+  hasPermission(permissionName: string): boolean {
+    return this.roles?.some((r) => r.hasPermission(permissionName)) ?? false;
+  }
+
+  hasAnyRole(roleNames: string[]): boolean {
+    return roleNames.some((role) => this.hasRole(role));
+  }
+
+  hasAnyPermission(permissionNames: string[]): boolean {
+    return permissionNames.some((permission) => this.hasPermission(permission));
   }
 }
